@@ -23,12 +23,15 @@ find_package(image_transport REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(rcpputils REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_eigen REQUIRED)
 
 set(common_ament_dependencies
   "apriltag_ros"
   "apriltag_msgs"
   "cv_bridge"
   "rclcpp"
+  "rclcpp_components"
+  "std_msgs"
   )
 
 foreach(pkg ${common_ament_dependencies})
@@ -83,7 +86,7 @@ target_include_directories(calibration_node
 add_library(undistort_component SHARED
   src/undistort_component.cpp)
 target_link_libraries(undistort_component opencv_core opencv_calib3d)
-ament_target_dependencies(undistort_component image_transport cv_bridge)
+ament_target_dependencies(undistort_component rclcpp rclcpp_components image_transport cv_bridge)
 target_include_directories(undistort_component
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   PRIVATE include)
@@ -96,7 +99,7 @@ rclcpp_components_register_nodes(undistort_component "multicam_calibration::Undi
 add_library(calibration_test_component SHARED
   src/calibration_test_component.cpp)
 target_link_libraries(calibration_test_component ${PROJECT_NAME})
-ament_target_dependencies(calibration_test_component image_transport cv_bridge tf2_ros)
+ament_target_dependencies(calibration_test_component image_transport cv_bridge tf2_ros tf2_eigen)
 rclcpp_components_register_nodes(
   calibration_test_component "multicam_calibration::CalibrationTestComponent")
 
