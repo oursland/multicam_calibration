@@ -7,8 +7,7 @@
 #include "multicam_calibration/utils.h"
 
 #include <cv_bridge/cv_bridge.h>
-#include <std_msgs/UInt32.h>
-#include <tf2_eigen/tf2_eigen.h>
+#include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <rclcpp_components/register_node_macro.hpp>
