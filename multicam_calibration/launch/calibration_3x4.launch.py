@@ -37,10 +37,6 @@ def generate_launch_description():
                 parameters=[
                     {'calib_dir': calib_dir,
                      'target_type': 'aprilgrid',
-                    #  'tag_rows': 6,
-                    #  'tag_cols': 8,
-                    #  'tag_size': 0.05,
-                    #  'tag_spacing': 0.2,
                      'tag_rows': 4,
                      'tag_cols': 3,
                      'tag_size': 0.17,

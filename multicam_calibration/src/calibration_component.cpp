@@ -45,7 +45,7 @@ void CalibrationComponent::initialize() {
   calibDir_ = declare_parameter("calib_dir", "calib");
   try {
     const std::string calibFile = declare_parameter(
-        "calibration_file", calibDir_ + "/" + deviceName_ + "-initial.yaml");
+        "calibration_file", calibDir_ + "/" + deviceName_ + "/" + deviceName_ + "-initial.yaml");
     parseCameras(calibFile);
   } catch (const std::runtime_error &e) {
     RCLCPP_ERROR_STREAM(get_logger(), "error parsing cameras: " << e.what());
@@ -65,6 +65,8 @@ void CalibrationComponent::initialize() {
   const float tagSize = declare_parameter("tag_size", 0.04);
   const float tagSpacing = declare_parameter("tag_spacing", 0.25);
   const std::string targetType = declare_parameter("target_type", "aprilgrid");
+  const std::string linkName = declare_parameter("latest_link_name", "latest.yaml");
+  const std::string resultsDir = declare_parameter("results_dir", ".");
 
   if (targetType != "aprilgrid") {
     RCLCPP_ERROR_STREAM(get_logger(), "invalid target_type: " << targetType);
@@ -163,9 +165,8 @@ bool CalibrationComponent::calibrate(
     return (true);
   }
 
-  const std::string linkName =
-      declare_parameter("latest_link_name", "latest.yaml");
-  const std::string resultsDir = declare_parameter("results_dir", ".");
+  const std::string linkName = get_parameter("latest_link_name").as_string();
+  const std::string resultsDir = get_parameter("results_dir").as_string();
 
   std::string fname = resultsDir + "/" + make_filename(deviceName_);
   std::string fullname = calibDir_ + "/" + fname;
@@ -463,6 +464,26 @@ void CalibrationComponent::subscribe() {
         RCLCPP_ERROR(get_logger(), "No exact sync beyond 3 cameras, right now");
       }
       break;
+    case 5:
+      if (use_approximate_sync_) {
+        approx_sync5_.reset(new ApproxTimeSynchronizer5(
+            ApproxSyncPolicy5(60 /*q size*/), *(sub_[0]), *(sub_[1]),
+            *(sub_[2]), *(sub_[3]), *(sub_[4])));
+        approx_sync5_->registerCallback(&CalibrationComponent::callback5, this);
+      } else {
+        RCLCPP_ERROR(get_logger(), "No exact sync beyond 3 cameras, right now");
+      }
+      break;
+    case 6:
+      if (use_approximate_sync_) {
+        approx_sync6_.reset(new ApproxTimeSynchronizer6(
+            ApproxSyncPolicy6(60 /*q size*/), *(sub_[0]), *(sub_[1]),
+            *(sub_[2]), *(sub_[3]), *(sub_[4]), *(sub_[5])));
+        approx_sync6_->registerCallback(&CalibrationComponent::callback6, this);
+      } else {
+        RCLCPP_ERROR(get_logger(), "No exact sync beyond 3 cameras, right now");
+      }
+      break;
     default:
       RCLCPP_ERROR(get_logger(), "invalid number of subscribers!");
   }
@@ -494,12 +515,12 @@ bool CalibrationComponent::guessCameraPose(const CamWorldPoints &wp,
         double rot_err = 1.5 - 0.5 * (T_err(0, 0) + T_err(1, 1) + T_err(2, 2));
         if (rot_err > 0.25) {
           RCLCPP_WARN_STREAM(get_logger(),
-                             "init tf for camera "
-                                 << cam_idx << " frame " << frameNum
+                             "init tf for camera \""
+                                 << cameras_[cam_idx].name << "\" frame " << frameNum
                                  << " is off from your initial .yaml file!");
-          RCLCPP_WARN_STREAM(get_logger(), "expected T_n_0 from "
-                                               << cam_idx
-                                               << " to cam 0 is roughly:");
+          RCLCPP_WARN_STREAM(get_logger(), "expected T_n_0 from \""
+                                               << cameras_[cam_idx].name
+                                               << "\" to \"" << cameras_[0].name << "\" is roughly:");
           RCLCPP_WARN_STREAM(get_logger(), T_n_w * T_0_w->inverse());
         }
       }

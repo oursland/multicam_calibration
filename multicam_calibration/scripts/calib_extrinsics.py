@@ -31,25 +31,8 @@ class ExampleCalibrationManager(Node):
         resp.success = True
         resp.message = "calibration program finished!"
         try:
-            # first do intrinsics of cam1
-            # self.set_p(FIX_INTRINSICS, "cam1", False)
-            # self.set_p(FIX_EXTRINSICS, "cam1", True)
-            # self.set_p(SET_ACTIVE,     "cam1", True)
-            # self.set_p(FIX_INTRINSICS, "cam2", True)
-            # self.set_p(FIX_EXTRINSICS, "cam2", True)
-            # self.set_p(SET_ACTIVE,     "cam2", False)
-            # self.run_cal()
-            # # then do intrinsics of cam2
-            # self.set_p(FIX_INTRINSICS, "cam1", True)
-            # self.set_p(FIX_EXTRINSICS, "cam1", True)
-            # self.set_p(SET_ACTIVE,     "cam1", False)
-            # self.set_p(FIX_INTRINSICS, "cam2", False)
-            # self.set_p(FIX_EXTRINSICS, "cam2", True)
-            # self.set_p(SET_ACTIVE,     "cam2", True)
-            # self.run_cal()
-            # now extrinsics between the two
             self.set_p(FIX_INTRINSICS, "cam1", True)
-            self.set_p(FIX_EXTRINSICS, "cam1", True)
+            self.set_p(FIX_EXTRINSICS, "cam1", False)
             self.set_p(SET_ACTIVE,     "cam1", True)
             self.set_p(FIX_INTRINSICS, "cam2", True)
             self.set_p(FIX_EXTRINSICS, "cam2", False)

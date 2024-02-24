@@ -13,7 +13,7 @@
 #define CERES_PUBLIC_INTERNAL_CONFIG_H_
 #include <ceres/ceres.h>
 
-//#define DEBUG_PARAMS
+#define DEBUG_PARAMS
 
 namespace multicam_calibration {
   using utils::Mat;
@@ -188,8 +188,8 @@ namespace multicam_calibration {
         const Vec<double, 3> rvec = Eigen::Map<const Vec<double, 3>>(&p[off]);
         Mat<double, 3, 3> R = rotation_matrix(rvec);
         const Vec<double, 3> t = Eigen::Map<const Vec<double, 3>>(&p[off + 3]);
-        //std::cout << "T_cam_cam0:  rot: " << "[" << vec_to_str(&R(0,0), 9) << "] trans: ["
-        //<< vec_to_str(&t(0), 3) << "]" << std::endl;
+        std::cout << "T_cam_cam0:  rot: " << "[" << vec_to_str(&R(0,0), 9) << "] trans: ["
+        << vec_to_str(&t(0), 3) << "]" << std::endl;
       }
       intrinsics_offset += cam.intrinsics.intrinsics.size() +
         cam.intrinsics.distortion_coeffs.size();
@@ -198,7 +198,7 @@ namespace multicam_calibration {
     off = extrinsics_base + 6 * (cams.size() - 1);
     std::cout << "--------- camera poses ----------------" << std::endl;
     for (; off < (int)p.size(); off += 6) {
-#if 0
+#if 1
       const Vec<double, 3> rvec = Eigen::Map<const Vec<double, 3>>(&p[off]);
       Mat<double, 3, 3> R = rotation_matrix(rvec);
       const Vec<double, 3> t  = Eigen::Map<const Vec<double, 3>>(&p[off + 3]);
@@ -293,8 +293,8 @@ namespace multicam_calibration {
     options.minimizer_progress_to_stdout = true;
     options.max_num_iterations = 200;
     options.num_threads = 4;
-    options.function_tolerance = 1e-12;
-    options.parameter_tolerance = 1e-12;
+    options.function_tolerance = 1e-10;
+    options.parameter_tolerance = 1e-10;
     ceres::Solver::Summary summary;
     ceres::Solve(options, &problem, &summary);
 

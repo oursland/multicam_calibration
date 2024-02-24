@@ -115,6 +115,8 @@ install(TARGETS
 
 # Install python scripts
 install(PROGRAMS
+  scripts/calib_extrinsics.py
+  scripts/calib_intrinsics.py
   scripts/example_calib_manager.py
   scripts/kalibr_to_camerainfo.py
   DESTINATION lib/${PROJECT_NAME}/)
